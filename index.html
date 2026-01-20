@@ -3,152 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LFT Tracker Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Smart Lift Monitoring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-color: #38bdf8;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --success: #22c55e;
+            --bg: #05070a;
+            --panel: #161b22;
+            --accent: #00f2ff;
+            --up: #00ff88;
+            --down: #ff3d3d;
+            --shaft: #0d1117;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: var(--bg);
+            color: white;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .container {
+        .dashboard {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 30px;
+            background: var(--panel);
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
             width: 90%;
-            max-width: 400px;
+            max-width: 500px;
+        }
+
+        /* --- Lift Shaft Animation --- */
+        .shaft-container {
+            height: 300px;
+            width: 80px;
+            background: var(--shaft);
+            border-radius: 15px;
+            position: relative;
+            border: 2px solid #30363d;
+            display: flex;
+            flex-direction: column-reverse;
+            justify-content: space-between;
+            padding: 10px 0;
+            box-sizing: border-box;
+        }
+
+        .floor-mark {
+            font-size: 10px;
+            color: #484f58;
             text-align: center;
+            width: 100%;
         }
 
-        .card {
-            background-color: var(--card-bg);
-            padding: 2rem;
-            border-radius: 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .lift-car {
+            position: absolute;
+            left: 10px;
+            width: 60px;
+            height: 50px;
+            background: linear-gradient(145deg, #38bdf8, #1d4ed8);
+            border-radius: 8px;
+            transition: bottom 1.5s cubic-bezier(0.45, 0, 0.55, 1);
+            bottom: 10px; /* Starting Floor 0 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+            z-index: 2;
         }
 
-        h1 {
-            font-size: 1.2rem;
+        .lift-car::after {
+            content: '';
+            width: 80%;
+            height: 2px;
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* --- Info Side --- */
+        .info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .label {
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: var(--text-dim);
-            margin-bottom: 2rem;
+            font-size: 12px;
+            color: #8b949e;
+            margin-bottom: 5px;
         }
 
-        .level-display {
-            font-size: 8rem;
-            font-weight: 800;
-            color: var(--accent-color);
-            line-height: 1;
-            margin: 1rem 0;
-            transition: all 0.3s ease;
-            text-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+        .floor-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5rem;
+            margin: 0;
+            color: var(--accent);
+            text-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
         }
 
-        .status-badge {
-            display: inline-flex;
+        .status-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+        }
+
+        .direction {
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
             align-items: center;
-            background: rgba(34, 197, 94, 0.1);
-            color: var(--success);
-            padding: 6px 16px;
-            border-radius: 100px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-top: 1rem;
+            gap: 10px;
         }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--success);
+        .up { color: var(--up); }
+        .down { color: var(--down); }
+        .idle { color: #8b949e; }
+
+        .arrow {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .connection-status {
+            margin-top: auto;
+            font-size: 11px;
+            color: #484f58;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .pulse {
+            width: 6px;
+            height: 6px;
+            background: var(--up);
             border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 2s infinite;
+            animation: blink 1.5s infinite;
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
-        }
-
-        .footer-text {
-            margin-top: 1.5rem;
-            font-size: 0.8rem;
-            color: var(--text-dim);
-        }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="card">
-            <h1>Lift Level</h1>
+    <div class="dashboard">
+        <div class="shaft-container">
+            <div class="floor-mark">FL 4</div>
+            <div class="floor-mark">FL 3</div>
+            <div class="floor-mark">FL 2</div>
+            <div class="floor-mark">FL 1</div>
+            <div class="floor-mark">FL 0</div>
             
-            <div id="level-value" class="level-display">--</div>
+            <div id="liftCar" class="lift-car"></div>
+        </div>
+
+        <div class="info">
+            <span class="label">Current Floor</span>
+            <h1 id="floorDisplay" class="floor-number">0</h1>
             
-            <div class="status-badge">
-                <span class="status-dot"></span>
-                Live from Your Lift 
+            <div class="status-container">
+                <span class="label">Movement</span>
+                <div id="statusText" class="direction idle">
+                    <span class="arrow">⬘</span> 
+                    <span>IDLE</span>
+                </div>
+            </div>
+
+            <div class="connection-status">
+                <div class="pulse"></div>
+                ESP32 LIVE SYSTEM
             </div>
         </div>
-        <p class="footer-text">Device: LIFT-Tracker V0.1</p>
-        <p class="footer-text">Made with Love <3</p>
-        <p class="footer-text">Hardware Hackers, SRM University AP.</p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Your Firebase configuration (Matches your Arduino Code)
         const firebaseConfig = {
             apiKey: "AIzaSyDN-F_m3XOKq75cQwK_sr18EEBuHlQiswA",
-            databaseURL: "https://lft-tracker-default-rtdb.firebaseio.com/",
-            projectId: "lft-tracker-default-rtdb"
+            databaseURL: "https://lft-tracker-default-rtdb.firebaseio.com/"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-
-        // Reference to your "level" path
         const levelRef = ref(db, 'level');
 
-        // Listen for real-time changes
+        let lastFloor = 0;
+
         onValue(levelRef, (snapshot) => {
-            const data = snapshot.val();
-            const display = document.getElementById('level-value');
-            
-            if (data !== null) {
-                display.innerText = data;
-                // Add a small scale effect when data changes
-                display.style.transform = "scale(1.1)";
-                setTimeout(() => {
-                    display.style.transform = "scale(1)";
-                }, 200);
-            } else {
-                display.innerText = "0";
-            }
-        }, (error) => {
-            console.error("Firebase Read Error: ", error);
-            document.getElementById('level-value').innerText = "ERR";
+            const currentFloor = snapshot.val();
+            if (currentFloor === null) return;
+
+            updateUI(currentFloor);
         });
+
+        function updateUI(floor) {
+            const liftCar = document.getElementById('liftCar');
+            const floorDisplay = document.getElementById('floorDisplay');
+            const statusText = document.getElementById('statusText');
+
+            // 1. Update Floor Number
+            floorDisplay.innerText = floor;
+
+            // 2. Animate Lift Position
+            // Total height of shaft is 300px. Each floor is roughly 60px.
+            const bottomPosition = (floor * 60) + 10;
+            liftCar.style.bottom = `${bottomPosition}px`;
+
+            // 3. Determine Direction
+            if (floor > lastFloor) {
+                statusText.className = "direction up";
+                statusText.innerHTML = `<span class="arrow">▲</span> GOING UP`;
+            } else if (floor < lastFloor) {
+                statusText.className = "direction down";
+                statusText.innerHTML = `<span class="arrow">▼</span> GOING DOWN`;
+            } else {
+                statusText.className = "direction idle";
+                statusText.innerHTML = `<span class="arrow">⬘</span> STATIONARY`;
+            }
+
+            lastFloor = floor;
+        }
     </script>
 </body>
-
 </html>
-
