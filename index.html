@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LFT Tracker Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #22c55e;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
+
+        .level-display {
+            font-size: 8rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            line-height: 1;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        .footer-text {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <h1>System Level</h1>
+            
+            <div id="level-value" class="level-display">--</div>
+            
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                Live from Database
+            </div>
+        </div>
+        <p class="footer-text">Device: ESP32-WROOM | LFT-Tracker</p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Your Firebase configuration (Matches your Arduino Code)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDN-F_m3XOKq75cQwK_sr18EEBuHlQiswA",
+            databaseURL: "https://lft-tracker-default-rtdb.firebaseio.com/",
+            projectId: "lft-tracker-default-rtdb"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Reference to your "level" path
+        const levelRef = ref(db, 'level');
+
+        // Listen for real-time changes
+        onValue(levelRef, (snapshot) => {
+            const data = snapshot.val();
+            const display = document.getElementById('level-value');
+            
+            if (data !== null) {
+                display.innerText = data;
+                // Add a small scale effect when data changes
+                display.style.transform = "scale(1.1)";
+                setTimeout(() => {
+                    display.style.transform = "scale(1)";
+                }, 200);
+            } else {
+                display.innerText = "0";
+            }
+        }, (error) => {
+            console.error("Firebase Read Error: ", error);
+            document.getElementById('level-value').innerText = "ERR";
+        });
+    </script>
+</body>
+</html>
