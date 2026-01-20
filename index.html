@@ -3,61 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Lift Monitoring</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    <title>Elevator Tracking System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #05070a;
-            --panel: #161b22;
-            --accent: #00f2ff;
-            --up: #00ff88;
-            --down: #ff3d3d;
-            --shaft: #0d1117;
+            --bg: #000000;
+            --panel: #1c1c1e;
+            --accent: #ffffff;
+            --up: #34c759;    /* Apple Green */
+            --down: #007aff;  /* Apple Blue */
+            --secondary: #8e8e93;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% -20%, #1c1c1e 0%, #000000 100%);
             color: white;
             margin: 0;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
             height: 100vh;
             overflow: hidden;
+        }
+
+        /* --- Apple Header --- */
+        header {
+            padding: 40px 20px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--secondary);
+            margin: 0;
+        }
+
+        header p {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 8px 0 0;
+            letter-spacing: -0.5px;
+        }
+
+        /* --- Main Layout --- */
+        .main-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
         .dashboard {
             display: grid;
             grid-template-columns: 120px 1fr;
-            gap: 30px;
+            gap: 40px;
             background: var(--panel);
-            padding: 30px;
-            border-radius: 30px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.05);
-            width: 90%;
+            padding: 40px;
+            border-radius: 40px; /* Apple Squircle */
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.08);
+            width: 100%;
             max-width: 500px;
+            backdrop-filter: blur(20px);
         }
 
-        /* --- Lift Shaft Animation --- */
+        /* --- Lift Shaft --- */
         .shaft-container {
-            height: 300px;
+            height: 320px;
             width: 80px;
-            background: var(--shaft);
-            border-radius: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 40px;
             position: relative;
-            border: 2px solid #30363d;
+            border: 1px solid rgba(255,255,255,0.05);
             display: flex;
             flex-direction: column-reverse;
             justify-content: space-between;
-            padding: 10px 0;
+            padding: 40px 0;
             box-sizing: border-box;
         }
 
         .floor-mark {
-            font-size: 10px;
-            color: #484f58;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--secondary);
             text-align: center;
             width: 100%;
         }
@@ -66,23 +99,24 @@
             position: absolute;
             left: 10px;
             width: 60px;
-            height: 50px;
-            background: linear-gradient(145deg, #38bdf8, #1d4ed8);
-            border-radius: 8px;
-            transition: bottom 1.5s cubic-bezier(0.45, 0, 0.55, 1);
-            bottom: 10px; /* Starting Floor 0 */
+            height: 60px;
+            background: #ffffff;
+            border-radius: 18px; /* High-end squircle */
+            transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+            bottom: 30px; 
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.15);
             z-index: 2;
         }
 
-        .lift-car::after {
-            content: '';
-            width: 80%;
-            height: 2px;
-            background: rgba(255,255,255,0.3);
+        .lift-car svg {
+            width: 24px;
+            height: 24px;
+            stroke: black;
+            stroke-width: 3;
+            display: none;
         }
 
         /* --- Info Side --- */
@@ -94,51 +128,51 @@
 
         .label {
             text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 12px;
-            color: #8b949e;
+            letter-spacing: 1px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--secondary);
             margin-bottom: 5px;
         }
 
         .floor-number {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 5rem;
+            font-size: 6rem;
+            font-weight: 800;
             margin: 0;
-            color: var(--accent);
-            text-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+            line-height: 1;
+            letter-spacing: -4px;
         }
 
         .status-container {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 15px;
+            margin-top: 25px;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         .direction {
-            font-weight: 700;
-            font-size: 1.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .up { color: var(--up); }
         .down { color: var(--down); }
-        .idle { color: #8b949e; }
+        .idle { color: var(--secondary); }
 
-        .arrow {
-            font-size: 1.5rem;
-            transition: transform 0.3s;
-        }
+        .arrow { font-size: 1.4rem; }
 
         .connection-status {
             margin-top: auto;
             font-size: 11px;
-            color: #484f58;
+            color: var(--secondary);
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            padding-top: 20px;
         }
 
         .pulse {
@@ -146,40 +180,75 @@
             height: 6px;
             background: var(--up);
             border-radius: 50%;
-            animation: blink 1.5s infinite;
+            animation: blink 2s infinite;
         }
 
-        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes blink { 50% { opacity: 0.3; } }
+
+        /* --- Mobile Optimization --- */
+        @media (max-width: 600px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 20px;
+                padding: 30px;
+            }
+            .shaft-container {
+                width: 100%;
+                height: 100px;
+                flex-direction: row;
+                padding: 0 40px;
+                order: 2;
+            }
+            .lift-car {
+                left: 30px;
+                bottom: 20px;
+                transition: left 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+            }
+            .info { order: 1; align-items: center; }
+            .connection-status { justify-content: center; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="dashboard">
-        <div class="shaft-container">
-            <div class="floor-mark">FL 4</div>
-            <div class="floor-mark">FL 3</div>
-            <div class="floor-mark">FL 2</div>
-            <div class="floor-mark">FL 1</div>
-            <div class="floor-mark">FL 0</div>
-            
-            <div id="liftCar" class="lift-car"></div>
-        </div>
+    <header>
+        <h1>Smart Infrastructure</h1>
+        <p>Elevator Tracking System</p>
+    </header>
 
-        <div class="info">
-            <span class="label">Current Floor</span>
-            <h1 id="floorDisplay" class="floor-number">0</h1>
-            
-            <div class="status-container">
-                <span class="label">Movement</span>
-                <div id="statusText" class="direction idle">
-                    <span class="arrow">⬘</span> 
-                    <span>IDLE</span>
+    <div class="main-container">
+        <div class="dashboard">
+            <div class="shaft-container">
+                <div class="floor-mark">4</div>
+                <div class="floor-mark">3</div>
+                <div class="floor-mark">2</div>
+                <div class="floor-mark">1</div>
+                <div class="floor-mark">0</div>
+                
+                <div id="liftCar" class="lift-car">
+                    <svg id="carArrow" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path id="arrowPath" d="M12 19V5M5 12l7-7 7 7"/>
+                    </svg>
                 </div>
             </div>
 
-            <div class="connection-status">
-                <div class="pulse"></div>
-                ESP32 LIVE SYSTEM
+            <div class="info">
+                <span class="label">Current Floor</span>
+                <h1 id="floorDisplay" class="floor-number">0</h1>
+                
+                <div class="status-container">
+                    <span class="label">Movement</span>
+                    <div id="statusText" class="direction idle">
+                        <span class="arrow">●</span> 
+                        <span>STATIONARY</span>
+                    </div>
+                </div>
+
+                <div class="connection-status">
+                    <div class="pulse"></div>
+                    SYSTEM LIVE
+                </div>
             </div>
         </div>
     </div>
@@ -202,7 +271,6 @@
         onValue(levelRef, (snapshot) => {
             const currentFloor = snapshot.val();
             if (currentFloor === null) return;
-
             updateUI(currentFloor);
         });
 
@@ -210,25 +278,36 @@
             const liftCar = document.getElementById('liftCar');
             const floorDisplay = document.getElementById('floorDisplay');
             const statusText = document.getElementById('statusText');
+            const carArrow = document.getElementById('carArrow');
 
-            // 1. Update Floor Number
             floorDisplay.innerText = floor;
 
-            // 2. Animate Lift Position
-            // Total height of shaft is 300px. Each floor is roughly 60px.
-            const bottomPosition = (floor * 60) + 10;
-            liftCar.style.bottom = `${bottomPosition}px`;
+            // Responsive Animation
+            const isMobile = window.innerWidth <= 600;
+            if (isMobile) {
+                const leftPos = 30 + (floor * (window.innerWidth - 120) / 4);
+                liftCar.style.left = `${leftPos}px`;
+                liftCar.style.bottom = `20px`;
+            } else {
+                const bottomPos = 30 + (floor * 60);
+                liftCar.style.bottom = `${bottomPos}px`;
+            }
 
-            // 3. Determine Direction
+            // Direction Logic
             if (floor > lastFloor) {
                 statusText.className = "direction up";
                 statusText.innerHTML = `<span class="arrow">▲</span> GOING UP`;
+                carArrow.style.display = "block";
+                carArrow.style.transform = "rotate(0deg)";
             } else if (floor < lastFloor) {
                 statusText.className = "direction down";
                 statusText.innerHTML = `<span class="arrow">▼</span> GOING DOWN`;
+                carArrow.style.display = "block";
+                carArrow.style.transform = "rotate(180deg)";
             } else {
                 statusText.className = "direction idle";
-                statusText.innerHTML = `<span class="arrow">⬘</span> STATIONARY`;
+                statusText.innerHTML = `<span class="arrow">●</span> STATIONARY`;
+                carArrow.style.display = "none";
             }
 
             lastFloor = floor;
